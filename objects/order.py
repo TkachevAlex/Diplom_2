@@ -1,9 +1,11 @@
+import allure
 import requests
 from urls import Urls
 
 
 class Order:
 
+    @allure.step('Создаем заказ')
     def create_order(self, ingredients, user=None):
         if user:
             headers = {'Authorization': user.data['accessToken']}

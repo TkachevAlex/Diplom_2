@@ -1,5 +1,6 @@
 from json import loads
 import allure
+from data import Error
 from objects.user import User
 from services.generate_data import UserData
 
@@ -12,32 +13,32 @@ class TestCreateUser:
         user.delete_user()
         assert (response.status_code == 200) and (loads(response.text)['success'] == True)
 
-    @allure.title('При попытке повторной регистрации, в ответе возвращается ошибка 403: "User already exists"')
-    def test__create_user__duplicate_user__user_already_exists(self, setup):
-        user = setup
+    @allure.title(f'При попытке повторной регистрации, в ответе возвращается ошибка 403: "{Error.ALREADY_EXISTS}"')
+    def test__create_user__duplicate_user__user_already_exists(self, create_user):
+        user = create_user
         response = user.create_user(user.data)
-        assert (response.status_code == 403) and (loads(response.text)['message'] == 'User already exists')
+        assert (response.status_code == 403) and (loads(response.text)['message'] == Error.ALREADY_EXISTS)
 
-    @allure.title('При попытке регистрации без указания email, в ответе возвращается ошибка 403: "Email, password and name are required fields"')
+    @allure.title(f'При попытке регистрации без указания email, в ответе возвращается ошибка 403: "{Error.EMPTY_FIELDS}"')
     def test__create_user__user_data_without_email__required_fields(self):
         user = User()
         user.data = UserData().generate_data()
         user.data['email'] = ''
         response = user.create_user(user.data)
-        assert (response.status_code == 403) and (loads(response.text)['message'] == 'Email, password and name are required fields')
+        assert (response.status_code == 403) and (loads(response.text)['message'] == Error.EMPTY_FIELDS)
 
-    @allure.title('При попытке регистрации без указания password, в ответе возвращается ошибка 403: "Email, password and name are required fields"')
+    @allure.title(f'При попытке регистрации без указания password, в ответе возвращается ошибка 403: "{Error.EMPTY_FIELDS}"')
     def test__create_user__user_data_without_password__required_fields(self):
         user = User()
         user.data = UserData().generate_data()
         user.data['password'] = ''
         response = user.create_user(user.data)
-        assert (response.status_code == 403) and (loads(response.text)['message'] == 'Email, password and name are required fields')
+        assert (response.status_code == 403) and (loads(response.text)['message'] == Error.EMPTY_FIELDS)
 
-    @allure.title('При попытке регистрации без указания name, в ответе возвращается ошибка 403: "Email, password and name are required fields"')
+    @allure.title(f'При попытке регистрации без указания name, в ответе возвращается ошибка 403: "{Error.EMPTY_FIELDS}"')
     def test__create_user__user_data_without_name__required_fields(self):
         user = User()
         user.data = UserData().generate_data()
         user.data['name'] = ''
         response = user.create_user(user.data)
-        assert (response.status_code == 403) and (loads(response.text)['message'] == 'Email, password and name are required fields')
+        assert (response.status_code == 403) and (loads(response.text)['message'] == Error.EMPTY_FIELDS)
